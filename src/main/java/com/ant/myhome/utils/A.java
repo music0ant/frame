@@ -10,4 +10,7 @@ class A {
 	private void t(){
 		System.out.println("Method t of A");
 	}
+	private void z(){
+		System.out.println("Method t of A");
+	}
 }
