@@ -18,6 +18,7 @@ public class Print {
 	}
 	
 	public int solution(int n){
+		//sdfds
 		String str = Integer.toBinaryString(n);
 		int longestGap = 0;
 		while(true){
