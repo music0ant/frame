@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="       
+      http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd       
+      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd       
+      http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.2.xsd       
+      http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd       
+      http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd 
+      http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd"
+	>
+
+	<!-- 自动扫描且只扫描@Controller -->
+	<context:component-scan base-package="com.uet.recruit" use-default-filters="false">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+    </context:component-scan>
+
+    <bean id="mappingJackson2HttpMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+<!--         <property name="objectMapper">
+            <bean class="com.github.miemiedev.mybatis.paginator.jackson2.PageListJsonMapper" />
+        </property> -->
+    </bean>
+
+	<mvc:annotation-driven>
+		<mvc:message-converters register-defaults="true">
+			<bean class="org.springframework.http.converter.StringHttpMessageConverter"> 
+				<constructor-arg value="UTF-8" />        
+			</bean>
+            <ref bean="mappingJackson2HttpMessageConverter" />
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+
+	<!-- 将无法mapping到Controller的path交给default servlet handler处理 -->
+	<mvc:default-servlet-handler />
+
+    <!--@ResponseBody方法异常处理-->
+   <!--  <bean class="com.uet.recruit.ResponseBodyHandlerExceptionResolver">
+        <property name="order" value="1"/>
+        <property name="messageConverter" ref="mappingJackson2HttpMessageConverter"/>
+    </bean> -->
+	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+		<property name="order" value="2"/>
+		<property name="defaultErrorView" value="common/error/exception"/>
+		<property name="exceptionAttribute" value="exception"/>
+		<property name="exceptionMappings">
+			<props>
+				<prop key="IOException">common/error/exception</prop>
+				<prop key="java.sql.SQLException">common/error/exception</prop>
+			</props>
+		</property>
+	</bean>
+
+
+    <!-- 定义JSP文件的位置 -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	<!-- 拦截器，登陆拦截，权限控制 -->
+	<!-- <mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/*" />
+			<mvc:mapping path="/*/*" />
+			<mvc:mapping path="/*/*/*" />  
+		<mvc:exclude-mapping path="/login/in"/>
+		<mvc:exclude-mapping path="/login/view"/>
+
+		
+		<bean class="com.uet.recruit.web.Interceptor.LoginInterceptor"></bean>
+		</mvc:interceptor>
+		
+	</mvc:interceptors> -->
+	
+</beans>
